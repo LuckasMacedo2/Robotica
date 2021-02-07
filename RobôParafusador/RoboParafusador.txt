@@ -1,0 +1,88 @@
+MODULE Module1
+	CONST robtarget p:=[[281.39,0.00,600.47],[0.108149,0,0.994135,0],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    
+    VAR NUM rot := 10;
+    CONST NUM j := -5;
+    
+    !***********************************************************
+    !
+    ! Module:  Module1
+    !
+    ! Description:
+    !   Código do robô que realiza a operação de pick and place
+    !
+    ! Author: Danilo Dias Costa, Lais Pereira Felipe e Lucas Macedo da Silva
+    !
+    ! Version: 1.0
+    !
+    !***********************************************************
+    
+    
+    !***********************************************************
+    !
+    ! Procedure main
+    !
+    !   Este robô é responsável por parafusar a peça.
+    !***********************************************************
+    PROC main()
+        
+        ! Reset dos Dos
+        SetDO DORoboOperacao, 0;
+        SetDO DOCaixaSensor, 0;
+        
+        ! Indica que o robô está operando
+        SetDO DORoboOperacao, 1;
+        
+        
+        FOR i FROM 0 TO 3 DO
+            
+            ! Reseta o sensor da caixa
+            SetDO DOCaixaSensor, 0;
+            
+            ! Espera o planeSensor detectar a caixa
+            WaitDI DIEsperaCaixa, 1;    ! Espera a caixa chegar no sensor         
+            
+            ! Realiza a operação de parafusar
+            parafusa p;
+            
+            ! Indica que a caixa pode ser movida para o ponto de place
+            SetDO DOCaixaSensor, 1;    
+            
+            ! Espera o termino da operação de pick and place
+            WaitDI DIEsperaPlace, 1;
+            
+        ENDFOR
+        
+        ! Indica que o robô não está operando
+        SetDO DORoboOperacao, 0;
+    ENDPROC
+    
+    PROC parafusa (robtarget ponto)
+        ! Move e rotaciona a ferramenta para parafusar
+        FOR i FROM 0 TO 250 STEP 5 DO
+            
+            WaitDI DIHumanoProximo, 0;  ! Espera o humano próximo sair de perto
+            
+            ! Incrementa o ponto 
+            ponto := Offs(ponto,0, 0, j);
+            
+            ! Incrementa o angulo de rotação
+            rot := rot + 10;
+            
+            ! Caso o angulo seja maior que 220° o ângulo é zerado, pois a junta não rotaciona os 360°
+            IF rot > 220 THEN
+                ! Sobe a ferramenta para zerar o ângulo e recomeçar a rotação
+                MoveJ  Offs(RelTool(ponto, 0, 0, 0, \Rx:=0 \Ry:=0 \Rz:=0), 0, 0, 20), v100, fine, tool0;
+                ! Zera o angulo
+                rot := 0;
+                ! Volta a ferramenta para o ponto antes de o ângulo ser zerado
+                MoveJ  Offs(ponto, 0, 0, -20), v100, fine, tool0;
+            ELSE
+                ! Rotaciona o ângulo e move a ferramenta para baixo
+                MoveJ  RelTool(ponto, 0, 0, 0, \Rx:=0 \Ry:=0 \Rz:=rot), v100, fine, tool0;
+            ENDIF
+        ENDFOR
+        MoveJ p, v1000, z50, tool0;
+    ENDPROC
+    
+ENDMODULE

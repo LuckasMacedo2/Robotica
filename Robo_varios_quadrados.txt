@@ -1,0 +1,89 @@
+MODULE Module1
+    ! Primeiro Plano em relação a base do robô
+	TASK PERS wobjdata wobjPlanoRobo:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[-269.832,167.443,84.028],[0.707107,1.46023E-7,6.57316E-8,0.707107]]];
+	CONST robtarget PontoRefPlanoRobo:=[[94.19,138.83,-0.00],[0.0541097,-0.6081,0.790805,0.0437473],[1,0,-1,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    CONST jointtarget PontoSingularidade:=[[97.8112,23.0692,-25.4347,4.56852,65.9745,-16.9361],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+	
+    ! Segundo plano em relação a mesa
+    TASK PERS wobjdata wobjMesa:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[14.4949,362.284,329.492],[0.707107,-3.36747E-7,-7.53611E-8,0.707107]]];
+	CONST robtarget PontoRefPlanoMesa:=[[129.28,104.08,72.79],[0.567256,-0.22838,0.791208,0.00726768],[1,1,-2,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    CONST robtarget PontoSingularidadeMesa:=[[34.72,81.54,327.40],[0.610186,-0.191889,0.768484,-0.0168591],[1,0,-1,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+	
+    ! terceiro plano em relação ao pedestal
+    TASK PERS wobjdata wobjPedestal:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[332.32,93.4457,224.447],[0.998356,0,0,-0.0573215]]];
+	CONST robtarget PontoSingularidadePedestal:=[[61.61,94.42,438.64],[0.655219,-0.501805,0.547127,-0.139756],[0,-1,-1,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+	CONST robtarget PontoRefPedestal:=[[-12.15,66.91,8.33],[0.137186,-0.382765,0.906162,0.116365],[0,0,-1,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+	
+    ! Move para o inicio
+    CONST robtarget PontoIncial:=[[-395.57,248.32,396.30],[0.593177,-0.784488,0.0922197,0.155614],[1,-1,-1,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    !***********************************************************
+    !
+    ! Module:  Module1
+    !
+    ! Description:
+    !   <Insert description here>
+    !
+    ! Author: Lucas Macedo da Silva
+    !
+    ! Version: 1.0
+    !
+    !***********************************************************
+    
+    
+    !***********************************************************
+    !
+    ! Procedure main
+    !
+    !   This is the entry point of your program
+    !
+    !***********************************************************
+    PROC main()
+        ! Movimento Inicial
+        MoveAbsJ PontoSingularidade\NoEOffs, v1000, z50, tool0;
+        
+        ! Quadrado em relação ao plano do robô
+        MoveJ PontoRefPlanoRobo, v1000, z50, tool0\WObj := wobjPlanoRobo;
+        quadrado PontoRefPlanoRobo;
+        
+        ! Quadrado em relação a mesa
+        MoveJ PontoSingularidadeMesa, v1000, z50, tool0\WObj:=wobjMesa;
+        MoveJ PontoRefPlanoMesa, v1000, z50, tool0\WObj:=wobjMesa;
+        quadradoMesa PontoRefPlanoRobo;
+        
+        ! Quadrado em relação ao pedestal
+        MoveJ PontoSingularidadePedestal, v1000, z50, tool0\WObj:=wobjPedestal;
+        MoveJ PontoRefPedestal, v1000, z50, tool0\WObj:=wobjPedestal;
+        quadradoPedestal PontoRefPedestal;
+        
+        ! Move para o ponto inicial
+        MoveJ PontoIncial, v1000, z50, tool0\WObj:=wobjPedestal;
+    ENDPROC
+    
+    PROC quadrado(robtarget ponto)
+        ! Quadrado
+        MoveL Offs(ponto,0,0,0), v500, fine, tool0\WObj := wobjPlanoRobo;
+        MoveL Offs(ponto,0,-100,0), v500, fine, tool0\WObj := wobjPlanoRobo;
+        MoveL Offs(ponto,100,-100,0), v500, fine, tool0\WObj := wobjPlanoRobo;
+        MoveL Offs(ponto,100,-0,0), v500, fine, tool0\WObj := wobjPlanoRobo;
+        MoveL Offs(ponto,0,0,0), v500, fine, tool0\WObj := wobjPlanoRobo;
+    ENDPROC
+    
+    PROC quadradoMesa(robtarget ponto)
+        ! Quadrado
+        MoveL Offs(ponto,0,0,0), v500, fine, tool0\WObj := wobjMesa;
+        MoveL Offs(ponto,0,-100,0), v500, fine, tool0\WObj := wobjMesa;
+        MoveL Offs(ponto,100,-100,0), v500, fine, tool0\WObj := wobjMesa;
+        MoveL Offs(ponto,100,-0,0), v500, fine, tool0\WObj := wobjMesa;
+        MoveL Offs(ponto,0,0,0), v500, fine, tool0\WObj := wobjMesa;
+    ENDPROC
+    
+     PROC quadradoPedestal(robtarget ponto)
+        ! Quadrado
+        MoveL Offs(ponto,0,0,0), v500, fine, tool0\WObj := wobjPedestal;
+        MoveL Offs(ponto,0,-100,0), v500, fine, tool0\WObj := wobjPedestal;
+        MoveL Offs(ponto,100,-100,0), v500, fine, tool0\WObj := wobjPedestal;
+        MoveL Offs(ponto,100,-0,0), v500, fine, tool0\WObj := wobjPedestal;
+        MoveL Offs(ponto,0,0,0), v500, fine, tool0\WObj := wobjPedestal;
+    ENDPROC
+    
+ENDMODULE

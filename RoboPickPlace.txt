@@ -1,0 +1,95 @@
+MODULE Module1
+    CONST robtarget PontoPick:=[[300,300,100],[0,0,1,0],[0,-1,1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget PontoPlace:=[[300,-300,100],[0,0,1,0],[-1,0,-2,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget PontoInicial:=[[300,-15,450],[0.190808091,-0.000000084,0.981627359,-0.0000001],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+	
+    VAR robtarget Ponto;
+    
+    !***********************************************************
+    ! Author: Lucas Macedo da Silva
+    !
+    ! Version: 1.0
+    !
+    ! Module:  Module1
+    !
+    ! Description:
+    !   Robô Pick and Place. Faz uma atividade simples de pegar e largar
+    !   um objeto 
+    !  
+    !   Interlocks:
+    !       - Input:
+    !            - BotaoLigaRobo: Botão que liga o robô no início do processo. 1 indica que o robô está ligado, 0 indica que o robô está desligado;
+    !            - SensorCaixaPega: Simula um sensor que indica que a caixa foi pega. 1 indica que a caixa foi pega, 0 indica que a caixa não foi pega;
+    !            - SensorCaixaSolta: Simula um sensor que indica que a caixa foi solta. 1 indica que a caixa foi solta, 0 indica que a caixa não foi solta;
+    !       - Outputs:
+    !            - LEDCompleto: Quando ligado indica que o robô terminou seu processo. 1 indica que o robô está descocupado, está parado, 0 indica que o robô está operando;
+    !            - LEDRoboOperacao: Quando ligado indica que o robô está em operação, quando desliga o robô não está operando. 1 indica que o robô está em operação, 0 indica que o robô está parado.
+    !   
+    !
+    !***********************************************************
+    
+    
+    !***********************************************************
+    !
+    ! Procedure main
+    !
+    !   This is the entry point of your program
+    !
+    !***********************************************************
+    
+    PROC main()
+        
+        ! Reseta outptus digitais
+        Reset DOPick;           ! Pick
+        Reset DOPlace;          ! Place
+        Reset LEDCompleto;      ! Led que indica que o robô terminou o processo
+        Reset LEDRoboOperando;  ! Led que indica que o robô está operando (trabalhando)
+        
+        ! Liga o Led indicando que o robô está operando
+        SetDO LEDRoboOperando, 1;
+        
+        ! Botão que liga o robô e o permite operar
+        WaitDI BotaoLigaRobo, 1;
+        
+        ! Pick
+        Ponto := PontoPick;
+        Pick Ponto;
+        
+        ! Place
+        Ponto := PontoPlace;
+        Place Ponto;
+        
+        ! Liga o LED indicando que o robô terminou o processo
+        SetDO LEDCompleto, 1;
+        ! Desliga o LED que indica que o robô está operando
+        SetDO LEDRoboOperando, 0;
+    ENDPROC
+    
+    PROC Pick(VAR robtarget p)
+        ! Move para o ponto inicial
+        MoveJ Offs(p, 0, -315, 350),v1000,z100,MyTool\WObj:=wobj0;    
+        
+        ! Move para o ponto pick e pega a caixa
+        MoveJDO p,v1000,z100,MyTool\WObj:=wobj0, DOPick, 1;
+        MoveJ p,v1000,z100,MyTool\WObj:=wobj0;
+        
+        ! Simula o sensor que indica que a caixa foi pega
+        WaitDI SensorCaixaPega, 1;
+        
+        MoveJ Offs(p, 0, 0, 200),v1000,z100,MyTool\WObj:=wobj0;
+    ENDPROC
+    
+    PROC Place(VAR robtarget p)
+       
+        ! Move para o ponto place e pega a caixa
+        MoveJDO p,v1000,z100,MyTool\WObj:=wobj0, DOPlace, 1;
+        MoveJ p,v1000,z100,MyTool\WObj:=wobj0;
+        
+        ! Simula o sensor que indica que a caixa foi solta
+        WaitDI SensorCaixaSolta, 1;
+        
+        ! Move para o ponto inicial
+        MoveJ Offs(p, 0, 315, 350),v1000,z100,MyTool\WObj:=wobj0;
+    ENDPROC   
+
+ENDMODULE

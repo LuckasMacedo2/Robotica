@@ -1,0 +1,67 @@
+MODULE Module1
+	CONST robtarget PontoInicio:=[[561.747713597,93.299683789,498.968568291],[0.002352938,0.766039311,-0.00280412,0.642783303],[0,-1,-2,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+	CONST robtarget PontoPick:=[[639.560970255,99.027344525,228.517580862],[0.001830259,0.866019602,-0.003170104,0.49999665],[0,-1,-2,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+	CONST robtarget PontoPlace:=[[23.456264864,486.259221127,228.517580862],[0,0.864189341,-0.503166754,0],[0,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    !***********************************************************
+    !
+    ! Module:  Module1
+    !
+    ! Description:
+    !   Código do robô que realiza a operação de pick and place
+    !
+    ! Author: Danilo Dias Costa, Lais Pereira Felipe e Lucas Macedo da Silva
+    !
+    ! Version: 1.0
+    !
+    !***********************************************************
+    
+    
+    !***********************************************************
+    !
+    ! Robô pick and place
+    !
+    !   Este robô é responsável por realizar a operação de pick and place.
+    !   Ele retira a caixa da esteira.
+    !***********************************************************
+    PROC main()
+        
+        FOR i FROM 0 TO 3 DO
+            
+            ! Reset dos DOs
+            SetDO DOPick, 0;
+            SetDO DOPlace, 0;
+            SetDO DOPlaceFinalizado, 0;
+            SetDO DOResetaEsteira, 0;
+            
+            ! Espera o sinal do robô parafusador, para dar início a operação de pick and place
+            WaitDI DIEsperaPick, 1;
+            
+            ! Realiza a operação
+            PickPlace;
+            
+            ! Informa ao robô parafusador que a caixa foi retirada da esteira
+            ! Também reinicia a esteira.
+            SetDO DOPlaceFinalizado, 1;
+            SetDO DOResetaEsteira, 1;
+            
+            WaitTime 0.5;
+        ENDFOR                  
+        
+    ENDPROC
+    
+	PROC PickPlace()
+        ! Ponto incial 
+	    MoveL PontoInicio,v1000,z100,MyTool\WObj:=wobj0;
+        
+        ! Ponto Pick
+        MoveLDO PontoPick,v1000,z100,MyTool\WObj:=wobj0, DOPick, 1;
+	    MoveL PontoPick,v1000,z100,MyTool\WObj:=wobj0;
+        
+        ! Ponto Place
+        MoveLDO PontoPlace,v1000,z100,MyTool\WObj:=wobj0, DOPlace, 1;
+	    MoveL PontoPlace,v1000,z100,MyTool\WObj:=wobj0;
+        
+        ! Ponto inicial
+	    MoveL PontoInicio,v1000,z100,MyTool\WObj:=wobj0;
+	ENDPROC
+ENDMODULE

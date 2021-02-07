@@ -1,0 +1,137 @@
+MODULE Module1
+	CONST jointtarget PontoSingularidade:=[[3.17308,12.6923,0,0,30,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+	CONST robtarget PontoInicio:=[[446.15,51.69,-0.00],[0.00825056,-0.230773,0.972824,0.0170211],[0,0,-1,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    
+    CONST string stcirculo :=  "Círculo";
+    CONST string stretangulo :=  "Retângulo";
+    CONST string stlosangulo :=  "Losângulo";
+    CONST string stcompleta :=  "Completa";
+    
+    VAR string stfig := "";
+    
+    VAR clock temporizador;
+    
+    VAR num contador := 0;
+    
+    VAR num fig := 0;
+    !***********************************************************
+    !
+    ! Module:  Module1
+    !
+    ! Description:
+    !   Robô que desenha a bandeira do Brasil com interações com o usuário
+    !
+    ! Author: Lucas
+    !
+    ! Version: 1.0
+    !
+    !***********************************************************
+    
+    
+    !***********************************************************
+    !
+    ! Procedure main
+    !
+    !   This is the entry point of your program
+    !
+    !***********************************************************
+    PROC main()
+        
+        TPErase;
+        
+        WHILE fig < 5 DO
+            ! Movimento inicial
+            
+            
+            
+            TPWrite "Robô que desenha a bandeira";
+            TPReadFK fig, "Escolha uma figura:", stretangulo, stlosangulo, stcirculo, stcompleta, "Sair";
+            
+            IF fig <> 5 THEN
+            
+                MoveAbsJ PontoSingularidade\NoEOffs, v1000, z50, tool0;
+                MoveL PontoInicio, v500, fine, tool0; 
+                
+                ! Reseta a variavel clock para contar o tempo
+                ClkReset temporizador;
+                ClkStart temporizador;
+                
+                TEST fig
+                
+                    CASE 1:
+                        ! Retangulo
+                        retangulo PontoInicio;
+                        stfig := stretangulo;
+                    
+                    CASE 2:
+                        ! Losangulo
+                        losangulo PontoInicio;
+                        stfig := stlosangulo;
+                        
+                    
+                    CASE 3:
+                        !Círculo
+                        circulo PontoInicio;
+                        stfig := stcirculo;
+                    
+                    CASE 4:
+                        !Círculo
+                        circulo PontoInicio;
+                        
+                        ! Losangulo
+                        losangulo PontoInicio;
+                                
+                        ! Retangulo
+                        retangulo PontoInicio;
+                        
+                        stfig := "Bandeira completa";
+                        
+                    DEFAULT:
+                        TPErase;
+                        TPWrite "Opção Inválida!";
+                            
+                ENDTEST 
+                
+                MoveAbsJ PontoSingularidade\NoEOffs, v1000, z50, tool0;
+                
+                TPErase;
+                TPWrite "O tempo gasto para desenhar " + stfig;
+                TPWrite "foi de " + ValToStr(ClkRead(temporizador)) + " segundos";
+                contador := contador + ClkRead(temporizador);
+            ELSE
+                TPErase;
+                TPWrite "Você escolheu sair";
+            ENDIF
+            
+        ENDWHILE
+        
+            TPErase;
+            TPWrite "O tempo total gasto no programa";
+            TPWrite "foi de " + ValToStr(contador) + " segundos";
+    ENDPROC
+    
+    PROC circulo(robtarget ponto)
+        ! Circulo
+        MoveC Offs(ponto,-40,-40,0),Offs(ponto,-80,0,0), v500,fine, tool0;
+        MoveC Offs(ponto,-40,40,0),ponto, v500, fine, tool0;
+    ENDPROC
+    
+    PROC losangulo(robtarget ponto)
+        ! Losangulo
+        MoveL Offs(ponto,20,0,0), v500, fine, tool0;
+        MoveL Offs(ponto,-40,100,0), v500, fine, tool0;
+        MoveL Offs(ponto,-100,0,0), v500, fine, tool0;
+        MoveL Offs(ponto,-40,-100,0), v500, fine, tool0;
+        MoveL Offs(ponto,20,0,0), v500, fine, tool0;
+    ENDPROC
+    
+    PROC retangulo(robtarget ponto)
+        ! Retangulo
+        MoveL Offs(ponto,40,0,0), v500, fine, tool0;
+        MoveL Offs(ponto,40,120,0), v500, fine, tool0;
+        MoveL Offs(ponto,-120,120,0), v500, fine, tool0;
+        MoveL Offs(ponto,-120,-120,0), v500, fine, tool0;
+        MoveL Offs(ponto,40,-120,0), v500, fine, tool0;
+        MoveL Offs(ponto,40,0,0), v500, fine, tool0;
+    ENDPROC
+ENDMODULE

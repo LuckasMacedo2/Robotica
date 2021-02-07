@@ -1,0 +1,64 @@
+MODULE Module1
+	CONST jointtarget PontoSingularidade:=[[3.17308,12.6923,0,0,30,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+	CONST robtarget PontoInicio:=[[446.15,51.69,-0.00],[0.00825056,-0.230773,0.972824,0.0170211],[0,0,-1,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    !***********************************************************
+    !
+    ! Module:  Module1
+    !
+    ! Description:
+    !   Robo que deseja a bandeira do Brasil
+    !
+    ! Author: Lucas
+    !
+    ! Version: 1.0
+    !
+    !***********************************************************
+    
+    
+    !***********************************************************
+    !
+    ! Procedure main
+    !
+    !   This is the entry point of your program
+    !
+    !***********************************************************
+    PROC main()
+        !Add your code here
+        MoveAbsJ PontoSingularidade\NoEOffs, v1000, z50, tool0;
+        MoveL PontoInicio, v500, fine, tool0; 
+        
+        !Círculo
+        circulo PontoInicio;
+        
+        ! Losangulo
+        losangulo PontoInicio;
+                
+        ! Retangulo
+        retangulo PontoInicio;
+    ENDPROC
+    
+    PROC circulo(robtarget ponto)
+        ! Circulo
+        MoveC Offs(ponto,-40,-40,0),Offs(ponto,-80,0,0), v500,fine, tool0;
+        MoveC Offs(ponto,-40,40,0),ponto, v500, fine, tool0;
+    ENDPROC
+    
+    PROC losangulo(robtarget ponto)
+        ! Losangulo
+        MoveL Offs(ponto,20,0,0), v500, fine, tool0;
+        MoveL Offs(ponto,-40,100,0), v500, fine, tool0;
+        MoveL Offs(ponto,-100,0,0), v500, fine, tool0;
+        MoveL Offs(ponto,-40,-100,0), v500, fine, tool0;
+        MoveL Offs(ponto,20,0,0), v500, fine, tool0;
+    ENDPROC
+    
+    PROC retangulo(robtarget ponto)
+        ! Retangulo
+        MoveL Offs(ponto,40,0,0), v500, fine, tool0;
+        MoveL Offs(ponto,40,120,0), v500, fine, tool0;
+        MoveL Offs(ponto,-120,120,0), v500, fine, tool0;
+        MoveL Offs(ponto,-120,-120,0), v500, fine, tool0;
+        MoveL Offs(ponto,40,-120,0), v500, fine, tool0;
+        MoveL Offs(ponto,40,0,0), v500, fine, tool0;
+    ENDPROC
+ENDMODULE
